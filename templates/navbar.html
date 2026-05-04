@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+  body {
+    font-family: 'Inter', sans-serif;
+  }
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg shadow-sm fixed-top"
+     style="background: #d1fae5;">
+
+  <div class="container-fluid">
+
+    <!-- Brand -->
+    <a class="navbar-brand fw-bold text-dark" href="/">
+      🛍 Amir Shop
+    </a>
+
+    <!-- MOBILE TOGGLE ONLY (VISIBLE ONLY ON MOBILE) -->
+    <button class="navbar-toggler border-0 d-lg-none" type="button"
+            data-bs-toggle="offcanvas" data-bs-target="#menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- ===================== -->
+    <!-- 💻 LAPTOP NAVBAR ONLY -->
+    <!-- ===================== -->
+    <div class="d-none d-lg-flex align-items-center ms-auto gap-4">
+
+      <a class="nav-link text-dark fw-semibold nav-hover" href="/">🏠 ہوم</a>
+      <a class="nav-link text-dark fw-semibold nav-hover" href="/aboutme">ℹ️ ہمارے بارے میں</a>
+      <a class="nav-link text-dark fw-semibold nav-hover" href="/products">🛒 پروڈکٹس</a>
+      <a class="nav-link text-dark fw-semibold nav-hover" href="/news">📰 تازہ خبریں</a>
+
+      <!-- Login Button -->
+      <a href="/login" class="btn btn-success px-4 rounded-pill">
+        👤 لاگ ان
+      </a>
+
+    </div>
+
+  </div>
+
+  <!-- ===================== -->
+  <!-- 📱 MOBILE OFFCANVAS ONLY -->
+  <!-- ===================== -->
+  <div class="offcanvas offcanvas-end d-lg-none" id="menu">
+
+    <div class="offcanvas-header" style="background:#d1fae5;">
+      <h5 class="fw-bold">🛍 Amir Shop</h5>
+      <button class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body">
+
+      <ul class="navbar-nav gap-3">
+
+        <li><a class="nav-link text-dark fs-5" href="/">🏠 ہوم</a></li>
+        <li><a class="nav-link text-dark fs-5" href="/aboutme">ℹ️ ہمارے بارے میں</a></li>
+        <li><a class="nav-link text-dark fs-5" href="/products">🛒 پروڈکٹس</a></li>
+        <li><a class="nav-link text-dark fs-5" href="/news">📰 تازہ خبریں</a></li>
+
+        <hr>
+
+        <li>
+          <a href="/login" class="btn btn-success w-100 rounded-pill">
+            👤 لاگ ان
+          </a>
+        </li>
+
+      </ul>
+
+    </div>
+  </div>
+
+</nav>
+
+<style>
+.nav-hover {
+  position: relative;
+  transition: 0.3s;
+}
+
+.nav-hover:hover {
+  color: #15803d !important;
+  transform: translateY(-2px);
+}
+</style>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amir_Shop</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<header>
+  <!-- Home SECTION -->
+  {% include "home.html" %}
+
+</header>
+
+<!-- MAIN -->
+<main>
+
+  <!-- NEWS SECTION -->
+  {% include "news.html" %}
+
+  <!-- PRODUCTS SECTION -->
+  {% include "products.html" %}
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  {% include "aboutme.html" %}
+</footer>
+
+{% endblock %}
+
+</body>
+</html>
