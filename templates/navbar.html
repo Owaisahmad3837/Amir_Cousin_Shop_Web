@@ -33,10 +33,10 @@
     <!-- ===================== -->
     <div class="d-none d-lg-flex align-items-center ms-auto gap-4">
 
-      <a class="nav-link text-dark fw-semibold nav-hover" href="/">🏠 ہوم</a>
-      <a class="nav-link text-dark fw-semibold nav-hover" href="/aboutme">ℹ️ ہمارے بارے میں</a>
-      <a class="nav-link text-dark fw-semibold nav-hover" href="/products">🛒 پروڈکٹس</a>
-      <a class="nav-link text-dark fw-semibold nav-hover" href="/news">📰 تازہ خبریں</a>
+      <a class="nav-link text-dark fw-semibold nav-hover" href="{{ url_for('index') }}">🏠 ہوم</a>
+      <a class="nav-link text-dark fw-semibold nav-hover" href="{{ url_for('aboutme') }}">ℹ️ ہمارے بارے میں</a>
+      <a class="nav-link text-dark fw-semibold nav-hover" href="{{ url_for('products_page') }}">🛒 پروڈکٹس</a>
+      <a class="nav-link text-dark fw-semibold nav-hover" href="{{ url_for('news_page') }}">📰 تازہ خبریں</a>
 
       <!-- Login Button -->
       <a href="/login" class="btn btn-success px-4 rounded-pill">
@@ -61,10 +61,10 @@
 
       <ul class="navbar-nav gap-3">
 
-        <li><a class="nav-link text-dark fs-5" href="/">🏠 ہوم</a></li>
-        <li><a class="nav-link text-dark fs-5" href="/aboutme">ℹ️ ہمارے بارے میں</a></li>
-        <li><a class="nav-link text-dark fs-5" href="/products">🛒 پروڈکٹس</a></li>
-        <li><a class="nav-link text-dark fs-5" href="/news">📰 تازہ خبریں</a></li>
+        <li><a class="nav-link text-dark fs-5" href="{{ url_for('index') }}">🏠 ہوم</a></li>
+        <li><a class="nav-link text-dark fs-5" href="{{ url_for('aboutme') }}">ℹ️ ہمارے بارے میں</a></li>
+        <li><a class="nav-link text-dark fs-5" href="{{ url_for('products_page') }}">🛒 پروڈکٹس</a></li>
+        <li><a class="nav-link text-dark fs-5" href="{{ url_for('news_page') }}">📰 تازہ خبریں</a></li>
 
         <hr>
 
