@@ -136,6 +136,50 @@ def admin_add():
         return redirect("/admin")
 
     return render_template("admin_add.html")
+# ================= Delte =================
+@app.route("/delete_product/<int:id>")
+@admin_required
+def delete_product(id):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    # 1️⃣ Get image name first
+    cur.execute("SELECT image FROM products WHERE id=%s", (id,))
+    img = cur.fetchone()
+
+    # 2️⃣ Delete image file from folder
+    if img:
+        path = os.path.join(app.root_path, "static/uploads", img[0])
+        if os.path.exists(path):
+            os.remove(path)
+
+    # 3️⃣ Delete from database
+    cur.execute("DELETE FROM products WHERE id=%s", (id,))
+    conn.commit()
+    conn.close()
+
+    return redirect("/admin")
+
+
+@app.route("/delete_news/<int:id>")
+@admin_required
+def delete_news(id):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT image FROM news WHERE id=%s", (id,))
+    img = cur.fetchone()
+
+    if img:
+        path = os.path.join(app.root_path, "static/uploads", img[0])
+        if os.path.exists(path):
+            os.remove(path)
+
+    cur.execute("DELETE FROM news WHERE id=%s", (id,))
+    conn.commit()
+    conn.close()
+
+    return redirect("/admin")
 
 
 # ================= NEWS DETAIL =================

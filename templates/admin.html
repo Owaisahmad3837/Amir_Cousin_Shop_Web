@@ -104,21 +104,29 @@
 
   <div class="table-responsive">
     <table class="table table-striped">
-      <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Qty</th>
-        <th>Price</th>
-      </tr>
+    <tr>
+  <th>ID</th>
+  <th>Title</th>
+  <th>Qty</th>
+  <th>Price</th>
+  <th>Action</th>
+</tr>
+    {% for p in products %}
+<tr>
+  <td>{{ p[0] }}</td>
+  <td>{{ p[1] }}</td>
+  <td>{{ p[2] }}</td>
+  <td>{{ p[3] }}</td>
 
-      {% for p in products %}
-      <tr>
-        <td>{{ p[0] }}</td>
-        <td>{{ p[1] }}</td>
-        <td>{{ p[2] }}</td>
-        <td>{{ p[3] }}</td>
-      </tr>
-      {% endfor %}
+  <td>
+    <a href="/delete_product/{{ p[0] }}" 
+       class="btn btn-danger btn-sm"
+       onclick="return confirm('Delete this product?')">
+       Delete
+    </a>
+  </td>
+</tr>
+{% endfor %}
 
     </table>
   </div>
@@ -134,13 +142,21 @@
         <th>Date</th>
       </tr>
 
-      {% for n in news %}
-      <tr>
-        <td>{{ n[0] }}</td>
-        <td>{{ n[1] }}</td>
-        <td>{{ n[2] }}</td>
-      </tr>
-      {% endfor %}
+    {% for n in news %}
+<tr>
+  <td>{{ n[0] }}</td>
+  <td>{{ n[1] }}</td>
+  <td>{{ n[2] }}</td>
+
+  <td>
+    <a href="/delete_news/{{ n[0] }}" 
+       class="btn btn-danger btn-sm"
+       onclick="return confirm('Delete this news?')">
+       Delete
+    </a>
+  </td>
+</tr>
+{% endfor %}
 
     </table>
   </div>
