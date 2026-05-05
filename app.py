@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, url_for
 from config import get_conn
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -6,7 +6,7 @@ import os
 
 app = Flask(__name__)
 
-# SECRET KEY (use env in production)
+# SECRET KEY
 app.secret_key = os.environ.get("SECRET_KEY", "supersecretkey")
 
 # Upload folder
@@ -19,7 +19,7 @@ def admin_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         if session.get("role") != "admin":
-            return redirect("/login")
+            return redirect(url_for("login"))
         return f(*args, **kwargs)
     return wrapper
 
@@ -39,6 +39,54 @@ def index():
     conn.close()
 
     return render_template("index.html", products=products, news=news)
+
+
+# ================= ABOUT =================
+@app.route("/aboutme")
+def aboutme():
+    return render_template("aboutme.html")
+
+
+# ================= PRODUCTS PAGE =================
+@app.route("/products")
+def products_page():
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM products")
+    products = cur.fetchall()
+
+    conn.close()
+
+    return render_template("products.html", products=products)
+
+
+# ================= NEWS PAGE =================
+@app.route("/news")
+def news_page():
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM news")
+    news = cur.fetchall()
+
+    conn.close()
+
+    return render_template("news.html", news=news)
+
+
+# ================= NEWS DETAIL =================
+@app.route("/news/<int:id>")
+def news_detail(id):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM news WHERE id=%s", (id,))
+    news_item = cur.fetchone()
+
+    conn.close()
+
+    return render_template("news_detail.html", news=news_item)
 
 
 # ================= LOGIN =================
@@ -64,7 +112,7 @@ def login():
             session["role"] = user[3]
 
             if user[3] == "admin":
-                return redirect("/admin")
+                return redirect(url_for("admin"))
             return "❌ Not admin"
 
         return render_template("login.html", error="Invalid login")
@@ -90,7 +138,7 @@ def admin():
     return render_template("admin.html", products=products, news=news)
 
 
-# ================= ADD DATA =================
+# ================= ADD =================
 @app.route("/admin_add", methods=["GET", "POST"])
 @admin_required
 def admin_add():
@@ -133,34 +181,34 @@ def admin_add():
         conn.commit()
         conn.close()
 
-        return redirect("/admin")
+        return redirect(url_for("admin"))
 
     return render_template("admin_add.html")
-# ================= Delte =================
+
+
+# ================= DELETE PRODUCT =================
 @app.route("/delete_product/<int:id>")
 @admin_required
 def delete_product(id):
     conn = get_conn()
     cur = conn.cursor()
 
-    # 1️⃣ Get image name first
     cur.execute("SELECT image FROM products WHERE id=%s", (id,))
     img = cur.fetchone()
 
-    # 2️⃣ Delete image file from folder
     if img:
         path = os.path.join(app.root_path, "static/uploads", img[0])
         if os.path.exists(path):
             os.remove(path)
 
-    # 3️⃣ Delete from database
     cur.execute("DELETE FROM products WHERE id=%s", (id,))
     conn.commit()
     conn.close()
 
-    return redirect("/admin")
+    return redirect(url_for("admin"))
 
 
+# ================= DELETE NEWS =================
 @app.route("/delete_news/<int:id>")
 @admin_required
 def delete_news(id):
@@ -179,30 +227,16 @@ def delete_news(id):
     conn.commit()
     conn.close()
 
-    return redirect("/admin")
-
-
-# ================= NEWS DETAIL =================
-@app.route("/news/<int:id>")
-def news_detail(id):
-    conn = get_conn()
-    cur = conn.cursor()
-
-    cur.execute("SELECT * FROM news WHERE id=%s", (id,))
-    news_item = cur.fetchone()
-
-    conn.close()
-
-    return render_template("news_detail.html", news=news_item)
+    return redirect(url_for("admin"))
 
 
 # ================= LOGOUT =================
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect("/login")
+    return redirect(url_for("login"))
 
 
-# ================= IMPORTANT FOR RAILWAY =================
+# ================= RUN =================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
