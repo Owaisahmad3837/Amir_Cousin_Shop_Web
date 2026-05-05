@@ -1,12 +1,5 @@
 import os
-from dotenv import load_dotenv
+import psycopg2
 
-# Load local .env file (ignored in Railway)
-load_dotenv()
-
-class Config:
-    # Database URL (Railway or local)
-    DATABASE_URL = os.getenv("DATABASE_URL")
-
-    # Secret key for sessions
-    SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey")
+def get_conn():
+    return psycopg2.connect(os.environ["DATABASE_URL"])

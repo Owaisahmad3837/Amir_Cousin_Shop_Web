@@ -1,33 +1,20 @@
 from flask import Flask, render_template, request, redirect, session
-from db import get_conn
+from config import get_conn
 from werkzeug.utils import secure_filename
 from functools import wraps
 import os
 
-# =========================
-# FLASK APP INIT
-# =========================
 app = Flask(__name__)
 
-# =========================
-# SECRET KEY (production safe)
-# =========================
-app.secret_key = os.getenv("SECRET_KEY", "supersecretkey")
+# SECRET KEY (use env in production)
+app.secret_key = os.environ.get("SECRET_KEY", "supersecretkey")
 
-# =========================
-# PORT (VERY IMPORTANT FOR RAILWAY)
-# =========================
-PORT = int(os.getenv("PORT", 5000))
-
-# =========================
-# UPLOAD CONFIG
-# =========================
-UPLOAD_FOLDER = os.path.join(app.root_path, "static/uploads")
+# Upload folder
+UPLOAD_FOLDER = os.path.join("static", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# =========================
-# ADMIN DECORATOR
-# =========================
+
+# ================= ADMIN CHECK =================
 def admin_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -37,9 +24,7 @@ def admin_required(f):
     return wrapper
 
 
-# =========================
-# HOME PAGE
-# =========================
+# ================= HOME =================
 @app.route("/")
 def index():
     conn = get_conn()
@@ -56,48 +41,7 @@ def index():
     return render_template("index.html", products=products, news=news)
 
 
-# =========================
-# STATIC PAGES
-# =========================
-@app.route("/home")
-def home():
-    return render_template("home.html")
-
-
-@app.route("/aboutme")
-def aboutme():
-    return render_template("aboutme.html")
-
-
-@app.route("/products")
-def products_page():
-    conn = get_conn()
-    cur = conn.cursor()
-
-    cur.execute("SELECT * FROM products")
-    products = cur.fetchall()
-
-    conn.close()
-
-    return render_template("products.html", products=products)
-
-
-@app.route("/news")
-def news_page():
-    conn = get_conn()
-    cur = conn.cursor()
-
-    cur.execute("SELECT * FROM news")
-    news = cur.fetchall()
-
-    conn.close()
-
-    return render_template("news.html", news=news)
-
-
-# =========================
-# LOGIN
-# =========================
+# ================= LOGIN =================
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -107,34 +51,28 @@ def login():
         conn = get_conn()
         cur = conn.cursor()
 
-        cur.execute("""
-            SELECT * FROM users 
-            WHERE gmail=%s AND password=%s
-        """, (gmail, password))
-
+        cur.execute(
+            "SELECT * FROM users WHERE gmail=%s AND password=%s",
+            (gmail, password)
+        )
         user = cur.fetchone()
         conn.close()
 
         if user:
-            session.clear()
-
             session["user_id"] = user[0]
             session["gmail"] = user[1]
             session["role"] = user[3]
 
             if user[3] == "admin":
                 return redirect("/admin")
-            else:
-                return "❌ You are not admin"
+            return "❌ Not admin"
 
-        return render_template("login.html", error="❌ Invalid credentials")
+        return render_template("login.html", error="Invalid login")
 
     return render_template("login.html")
 
 
-# =========================
-# ADMIN DASHBOARD
-# =========================
+# ================= ADMIN =================
 @app.route("/admin")
 @admin_required
 def admin():
@@ -152,9 +90,7 @@ def admin():
     return render_template("admin.html", products=products, news=news)
 
 
-# =========================
-# ADD PRODUCT / NEWS
-# =========================
+# ================= ADD DATA =================
 @app.route("/admin_add", methods=["GET", "POST"])
 @admin_required
 def admin_add():
@@ -163,35 +99,31 @@ def admin_add():
 
     if request.method == "POST":
 
-        # ===== PRODUCT =====
+        # PRODUCT
         if "product_submit" in request.form:
-
             title = request.form["title"]
             quantity = request.form["quantity"]
             price = request.form["price"]
             detail = request.form["detail"]
 
-            image_file = request.files["image"]
-            filename = secure_filename(image_file.filename)
-
-            image_file.save(os.path.join(UPLOAD_FOLDER, filename))
+            img = request.files["image"]
+            filename = secure_filename(img.filename)
+            img.save(os.path.join(UPLOAD_FOLDER, filename))
 
             cur.execute("""
                 INSERT INTO products (title, image, quantity, price, detail)
                 VALUES (%s,%s,%s,%s,%s)
             """, (title, filename, quantity, price, detail))
 
-        # ===== NEWS =====
+        # NEWS
         elif "news_submit" in request.form:
-
             title = request.form["title"]
             date = request.form["date"]
             detail = request.form["detail"]
 
-            image_file = request.files["image"]
-            filename = secure_filename(image_file.filename)
-
-            image_file.save(os.path.join(UPLOAD_FOLDER, filename))
+            img = request.files["image"]
+            filename = secure_filename(img.filename)
+            img.save(os.path.join(UPLOAD_FOLDER, filename))
 
             cur.execute("""
                 INSERT INTO news (title, date, image, detail)
@@ -206,9 +138,7 @@ def admin_add():
     return render_template("admin_add.html")
 
 
-# =========================
-# NEWS DETAIL
-# =========================
+# ================= NEWS DETAIL =================
 @app.route("/news/<int:id>")
 def news_detail(id):
     conn = get_conn()
@@ -222,17 +152,13 @@ def news_detail(id):
     return render_template("news_detail.html", news=news_item)
 
 
-# =========================
-# LOGOUT
-# =========================
+# ================= LOGOUT =================
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/login")
 
 
-# =========================
-# RUN (PRODUCTION + RAILWAY SAFE)
-# =========================
+# ================= IMPORTANT FOR RAILWAY =================
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=PORT)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
