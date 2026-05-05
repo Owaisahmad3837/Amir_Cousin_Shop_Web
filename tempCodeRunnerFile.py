@@ -1,6 +1,6 @@
 
 from flask import Flask, render_template, request, redirect, session
-from Config import get_conn
+from config import get_conn
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"

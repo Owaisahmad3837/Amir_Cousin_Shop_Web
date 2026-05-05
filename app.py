@@ -1,11 +1,23 @@
 from flask import Flask, render_template, request, redirect, session
-from Config import get_conn
+from db import get_conn
 from werkzeug.utils import secure_filename
 from functools import wraps
 import os
 
+# =========================
+# FLASK APP INIT
+# =========================
 app = Flask(__name__)
-app.secret_key = "supersecretkey"
+
+# =========================
+# SECRET KEY (production safe)
+# =========================
+app.secret_key = os.getenv("SECRET_KEY", "supersecretkey")
+
+# =========================
+# PORT (VERY IMPORTANT FOR RAILWAY)
+# =========================
+PORT = int(os.getenv("PORT", 5000))
 
 # =========================
 # UPLOAD CONFIG
@@ -13,9 +25,8 @@ app.secret_key = "supersecretkey"
 UPLOAD_FOLDER = os.path.join(app.root_path, "static/uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-
 # =========================
-# ADMIN DECORATOR (SECURITY)
+# ADMIN DECORATOR
 # =========================
 def admin_required(f):
     @wraps(f)
@@ -109,7 +120,7 @@ def login():
 
             session["user_id"] = user[0]
             session["gmail"] = user[1]
-            session["role"] = user[3]  # role column
+            session["role"] = user[3]
 
             if user[3] == "admin":
                 return redirect("/admin")
@@ -142,7 +153,7 @@ def admin():
 
 
 # =========================
-# ADD PRODUCT + NEWS
+# ADD PRODUCT / NEWS
 # =========================
 @app.route("/admin_add", methods=["GET", "POST"])
 @admin_required
@@ -152,7 +163,7 @@ def admin_add():
 
     if request.method == "POST":
 
-        # ================= PRODUCT =================
+        # ===== PRODUCT =====
         if "product_submit" in request.form:
 
             title = request.form["title"]
@@ -170,7 +181,7 @@ def admin_add():
                 VALUES (%s,%s,%s,%s,%s)
             """, (title, filename, quantity, price, detail))
 
-        # ================= NEWS =================
+        # ===== NEWS =====
         elif "news_submit" in request.form:
 
             title = request.form["title"]
@@ -196,7 +207,7 @@ def admin_add():
 
 
 # =========================
-# NEWS DETAIL PAGE
+# NEWS DETAIL
 # =========================
 @app.route("/news/<int:id>")
 def news_detail(id):
@@ -221,7 +232,7 @@ def logout():
 
 
 # =========================
-# RUN APP
+# RUN (PRODUCTION + RAILWAY SAFE)
 # =========================
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=PORT)
